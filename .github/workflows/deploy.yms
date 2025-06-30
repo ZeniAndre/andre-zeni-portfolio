@@ -8,8 +8,9 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     permissions:
-      pages: write
-      id-token: write
+      pages: write       # allow deployment to Pages
+      id-token: write    # required by deploy-pages@v4
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -25,10 +26,20 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Debug build output
+        run: |
+          echo "Working directory: $(pwd)"
+          echo "Repository contents:"
+          ls -R .
+          echo "Checking build outputs:" 
+          # Try dist (for Vite) or build (for CRA)
+          ls -R ./dist || ls -R ./build
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          path: ./dist
+          # Update this path to match your build output directory (dist or build)
+          path: ./build
 
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
